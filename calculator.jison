@@ -22,7 +22,6 @@ function fact (n) {
 }
 %}
 
-
 /* operator associations and precedence */
 
 %right '='

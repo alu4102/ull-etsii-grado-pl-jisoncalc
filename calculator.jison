@@ -1,4 +1,3 @@
-
 /* description: Parses end executes mathematical expressions. */
 
 /* lexical grammar */
@@ -7,6 +6,9 @@
 
 \s+                   /* skip whitespace */
 [0-9]+("."[0-9]+)?\b  return 'NUMBER'
+"PI"                  return 'PI'
+"E"                   return 'E'
+\b[A-Za-z_]\w*\b      return 'ID'
 "*"                   return '*'
 "/"                   return '/'
 "-"                   return '-'
@@ -14,17 +16,22 @@
 "^"                   return '^'
 "!"                   return '!'
 "%"                   return '%'
+"="                   return '='
 "("                   return '('
 ")"                   return ')'
-"PI"                  return 'PI'
-"E"                   return 'E'
-<<EOF>>               return 'EOF'
+";"                   return ';'
 .                     return 'INVALID'
 
 /lex
 
+%{
+var symbol_table = {};
+%}
+
+
 /* operator associations and precedence */
 
+%right '='
 %left '+' '-'
 %left '*' '/'
 %left '^'
@@ -32,18 +39,33 @@
 %right '%'
 %left UMINUS
 
-%start expressions
+%start prog
 
 %% /* language grammar */
+prog
+    : expressions 
+        { 
+          $$ = $1; 
+          console.log($$);
+          return symbol_table;
+        }
+    ;
 
 expressions
-    : e EOF
+    : e 
         { typeof console !== 'undefined' ? console.log($1) : print($1);
-          return $1; }
+          $$ = [ $1 ]; }
+    | expressions ';' e
+        { $$ = $1.slice();
+          $$.push($3); 
+          console.log($$);
+        }
     ;
 
 e
-    : e '+' e
+    : ID '=' e
+        { symbol_table[$1] = $3; }
+    | e '+' e
         {$$ = $1+$3;}
     | e '-' e
         {$$ = $1-$3;}
@@ -69,5 +91,7 @@ e
         {$$ = Math.E;}
     | PI
         {$$ = Math.PI;}
+    | ID 
+        { $$ = symbol_table[yytext]}
     ;
 

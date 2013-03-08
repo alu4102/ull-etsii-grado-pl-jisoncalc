@@ -1,8 +1,8 @@
 $(document).ready(function () {
-  $("#compute").click(function () {
+  $("#eval").click(function () {
     try {
       var result = calculator.parse($("#input").val())
-      $("#output").html(result);
+      $("#output").html(JSON.stringify(result, undefined, 0));
     } catch (e) {
       $("#output").html(String(e));
     }

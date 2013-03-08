@@ -5,22 +5,12 @@
 %%
 
 \s+                   /* skip whitespace */
-[0-9]+("."[0-9]+)?\b  return 'NUMBER'
-"PI"                  return 'PI'
-"E"                   return 'E'
-\b[A-Za-z_]\w*\b      return 'ID'
-"*"                   return '*'
-"/"                   return '/'
-"-"                   return '-'
-"+"                   return '+'
-"^"                   return '^'
-"!"                   return '!'
-"%"                   return '%'
-"="                   return '='
-"("                   return '('
-")"                   return ')'
-";"                   return ';'
-.                     return 'INVALID'
+\b\d+("."\d*)?([eE][-+]?\d+)?\b  return 'NUMBER'
+"PI"                             return 'PI'
+"E"                              return 'E'
+\b[A-Za-z_]\w*\b                 return 'ID'
+[-*/+^!%=();]                    return yytext;
+.                                return 'INVALID'
 
 /lex
 

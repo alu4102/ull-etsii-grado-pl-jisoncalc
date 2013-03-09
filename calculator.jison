@@ -12,7 +12,7 @@ function idORrw(x) {
 %}
 %%
 
-\s+                              /* skip whitespace */
+\s+|\#.*                         /* skip whitespace and comments */
 \b\d+("."\d*)?([eE][-+]?\d+)?\b  return 'NUMBER'
 \b[A-Za-z_]\w*\b                 return idORrw(yytext)
 [-*/+^!%=();]                    return yytext;
@@ -51,9 +51,8 @@ prog
     ;
 
 expressions
-    : e 
-        { typeof console !== 'undefined' ? console.log($1) : print($1);
-          $$ = [ $1 ]; }
+    : e  
+        { $$ = [ $1 ]; }
     | expressions ';' e
         { $$ = $1;
           $$.push($3); 

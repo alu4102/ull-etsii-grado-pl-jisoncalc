@@ -40,7 +40,7 @@ prog
         { 
           $$ = $1; 
           console.log($$);
-          return symbol_table;
+          return [$$, symbol_table];
         }
     ;
 
@@ -57,7 +57,7 @@ expressions
 
 e
     : ID '=' e
-        { symbol_table[$1] = $3; }
+        { symbol_table[$1] = $$ = $3; }
     | e '+' e
         {$$ = $1+$3;}
     | e '-' e

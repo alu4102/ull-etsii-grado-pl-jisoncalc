@@ -2,13 +2,19 @@
 
 /* lexical grammar */
 %lex
+%{
+var reserved_words ={ PI: 'PI', E : 'E'}
+
+function idORrw(x) {
+  return (x.toUpperCase() in reserved_words)? x.toUpperCase() : 'ID'
+}
+
+%}
 %%
 
 \s+                   /* skip whitespace */
 \b\d+("."\d*)?([eE][-+]?\d+)?\b  return 'NUMBER'
-"PI"                             return 'PI'
-"E"                              return 'E'
-\b[A-Za-z_]\w*\b                 return 'ID'
+\b[A-Za-z_]\w*\b                 return idORrw(yytext)
 [-*/+^!%=();]                    return yytext;
 .                                return 'INVALID'
 
@@ -85,6 +91,6 @@ e
     | PI
         {$$ = Math.PI;}
     | ID 
-        { $$ = symbol_table[yytext]}
+        { $$ = symbol_table[yytext] || 0; }
     ;
 

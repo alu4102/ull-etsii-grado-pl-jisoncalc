@@ -16,6 +16,7 @@ function idORrw(x) {
 \b\d+("."\d*)?([eE][-+]?\d+)?\b  return 'NUMBER'
 \b[A-Za-z_]\w*\b                 return idORrw(yytext)
 [-*/+^!%=();]                    return yytext;
+<<EOF>>                          return 'EOF'
 .                                return 'INVALID'
 
 /lex
@@ -42,7 +43,7 @@ function fact (n) {
 
 %% /* language grammar */
 prog
-    : expressions 
+    : expressions EOF
         { 
           $$ = $1; 
           console.log($$);
@@ -51,13 +52,18 @@ prog
     ;
 
 expressions
-    : e  
-        { $$ = [ $1 ]; }
-    | expressions ';' e
+    : s  
+        { $$ = $1? [ $1 ] : []; }
+    | expressions ';' s
         { $$ = $1;
-          $$.push($3); 
+          if ($3) $$.push($3); 
           console.log($$);
         }
+    ;
+
+s
+    : /* empty */
+    | e
     ;
 
 e

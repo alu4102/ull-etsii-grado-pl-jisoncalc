@@ -1,6 +1,5 @@
 /* description: Parses end executes mathematical expressions. */
 
-
 %{
 var symbol_table = {};
 
@@ -49,6 +48,10 @@ s
 e
     : ID '=' e
         { symbol_table[$1] = $$ = $3; }
+    | PI '=' e 
+        { throw new Error("Can't assign to constant 'π'"); }
+    | E '=' e 
+        { throw new Error("Can't assign to math constant 'e'"); }
     | e '+' e
         {$$ = $1+$3;}
     | e '-' e

@@ -56,7 +56,10 @@ e
     | e '*' e
         {$$ = $1*$3;}
     | e '/' e
-        {$$ = $1/$3;}
+        {
+          if ($3 == 0) throw new Error("Division by zero, error!");
+          $$ = $1/$3;
+        }
     | e '^' e
         {$$ = Math.pow($1, $3);}
     | e '!'

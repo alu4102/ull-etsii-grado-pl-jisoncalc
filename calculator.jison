@@ -14,7 +14,7 @@ function fact (n) {
 %left '+' '-'
 %left '*' '/'
 %left '^'
-%right '!'
+%left '!'
 %right '%'
 %left UMINUS
 
@@ -66,9 +66,9 @@ e
     | e '^' e
         {$$ = Math.pow($1, $3);}
     | e '!'
-        {{
+        {
           $$ = fact($1);
-        }}
+        }
     | e '%'
         {$$ = $1/100;}
     | '-' e %prec UMINUS

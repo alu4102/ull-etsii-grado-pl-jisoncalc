@@ -15,3 +15,8 @@ end
 task :clean do
   sh "rm -f calculator.js"
 end
+
+desc "Open browser in GitHub repo"
+task :github do
+  sh "open https://github.com/crguezl/ull-etsii-grado-pl-jisoncalc"
+end

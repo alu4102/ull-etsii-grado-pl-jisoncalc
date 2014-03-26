@@ -1,7 +1,7 @@
-task :default => %w{calculator.js} 
+task :default => %w{public/calculator.js} 
 
-file "calculator.js" => %w{calculator.jison} do
-  sh "jison calculator.jison calculator.l -o calculator.js"
+file "public/calculator.js" => %w{public/calculator.jison} do
+  sh "jison public/calculator.jison public/calculator.l -o public/calculator.js"
 end
 
 task :testf do
@@ -13,7 +13,7 @@ task :tests do
 end
 
 task :clean do
-  sh "rm -f calculator.js"
+  sh "rm -f public/calculator.js"
 end
 
 desc "Open browser in GitHub repo"

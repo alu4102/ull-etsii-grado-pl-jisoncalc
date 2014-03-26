@@ -32,7 +32,7 @@ prog
 
 expressions
     : s  
-        { $$ = $1? [ $1 ] : []; }
+        { $$ = (typeof $1 === 'undefined')? [] : [ $1 ]; }
     | expressions ';' s
         { $$ = $1;
           if ($3) $$.push($3); 

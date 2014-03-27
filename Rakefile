@@ -1,7 +1,13 @@
 task :default => %w{public/calculator.js} 
 
+desc "Compile the grammar public/calculator.jison"
 file "public/calculator.js" => %w{public/calculator.jison} do
   sh "jison public/calculator.jison public/calculator.l -o public/calculator.js"
+end
+
+desc "Compile the sass public/styles.scss"
+task :css do
+  sh "sass public/styles.scss public/styles.css"
 end
 
 task :testf do

@@ -3,7 +3,10 @@ require "sinatra/reloader" if development?
 require 'omniauth-oauth2'
 require 'omniauth-google-oauth2'
 require 'data_mapper'
+require 'sinatra/flash'
 require 'pp'
+
+enable :sessions
 
 # full path!
 DataMapper.setup(:default, 
@@ -58,7 +61,12 @@ post '/save' do
       c.name = params["fname"]
       c.source = params["input"]
       c.save
+      flash[:notice] = 
+        %Q{<div class="success">File saved as #{c.name}.</div>}
     end
+  else 
+    flash[:notice] = 
+      %q{<div class="error">Can't save file with name 'test'.</div>}
   end
   pp c
   redirect '/'

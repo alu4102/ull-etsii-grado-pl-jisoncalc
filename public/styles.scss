@@ -1,7 +1,9 @@
 $red: #903;
 $black: #444;
 $white: #fff;
+$green: #00FF33;
 $blue: #002EB8;
+$orange: #FF6600;
 $main-font: Helvetica, Arial, sans-serif;
 
 body {
@@ -110,8 +112,13 @@ nav a.current {
 }
    
 .error {
-  color: $white;
-  background-color: $red;
+  color: $orange;
+  background-color: $black;
+}
+
+.success {
+  color: $green;
+  background-color: $black;
 }
 
 .centered {

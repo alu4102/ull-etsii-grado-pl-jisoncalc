@@ -76,8 +76,12 @@ nav a.current {
     cursor: pointer; }
 
 .error {
-  color: white;
-  background-color: #990033; }
+  color: #ff6600;
+  background-color: #444444; }
+
+.success {
+  color: #00ff33;
+  background-color: #444444; }
 
 .centered {
   text-align: center; }

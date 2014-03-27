@@ -48,7 +48,6 @@ post '/save' do
   name = params[:fname]
   if name != "test" # check it on the client side
     c  = PL0Program.first(:name => name)
-    puts "prog <#{c.inspect}>"
     if c
       c.source = params["input"]
       c.save
@@ -57,10 +56,9 @@ post '/save' do
         c = PL0Program.all.sample
         c.destroy
       end
-      c = PL0Program.new
-      c.name = params["fname"]
-      c.source = params["input"]
-      c.save
+      c = PL0Program.create(
+        :name => params["fname"], 
+        :source => params["input"])
       flash[:notice] = 
         %Q{<div class="success">File saved as #{c.name}.</div>}
     end

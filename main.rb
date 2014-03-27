@@ -27,12 +27,10 @@ get '/grammar' do
   erb :grammar
 end
 
-get '/login/?' do
-  %Q|<a href='/auth/google_oauth2'>Sign in with Google</a>|
-end
-
 get '/auth/:name/callback' do
-  @auth = request.env['omniauth.auth']
+  session[:auth] = @auth = request.env['omniauth.auth']
+  session[:name] = @auth['info'].name
+  session[:image] = @auth['info'].image
   puts "params = #{params}"
   puts "@auth.class = #{@auth.class}"
   puts "@auth info = #{@auth['info']}"
@@ -49,6 +47,9 @@ get '/auth/:name/callback' do
 end
 
 get '/:selected?' do |selected|
+  puts "*************@auth*****************"
+  puts session[:name]
+  pp session[:auth]
   programs = PL0Program.all
   pp programs
   puts "selected = #{selected}"
@@ -61,26 +62,33 @@ end
 post '/save' do
   pp params
   name = params[:fname]
-  if settings.reserved_words.include? name  # check it on the client side
-    flash[:notice] = 
-      %Q{<div class="error">Can't save file with name '#{name}'.</div>}
-  else 
-    c  = PL0Program.first(:name => name)
-    if c
-      c.source = params["input"]
-      c.save
-    else
-      if PL0Program.all.size >= settings.max_files
-        c = PL0Program.all.sample
-        c.destroy
-      end
-      c = PL0Program.create(
-        :name => params["fname"], 
-        :source => params["input"])
+  if session[:auth] # authenticated
+    if settings.reserved_words.include? name  # check it on the client side
       flash[:notice] = 
-        %Q{<div class="success">File saved as #{c.name}.</div>}
+        %Q{<div class="error">Can't save file with name '#{name}'.</div>}
+    else 
+      c  = PL0Program.first(:name => name)
+      if c
+        c.source = params["input"]
+        c.save
+      else
+        if PL0Program.all.size >= settings.max_files
+          c = PL0Program.all.sample
+          c.destroy
+        end
+        c = PL0Program.create(
+          :name => params["fname"], 
+          :source => params["input"])
+        flash[:notice] = 
+          %Q{<div class="success">File saved as #{c.name}.</div>}
+      end
+      pp c
     end
+  else
+    flash[:notice] = 
+      %Q{<div class="error">You are not authenticated.<br />
+         Sign in with Google.
+         </div>}
   end
-  pp c
   redirect '/'
 end

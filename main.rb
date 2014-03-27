@@ -8,6 +8,11 @@ require 'pp'
 
 enable :sessions
 
+use OmniAuth::Builder do
+  config = YAML.load_file 'config/config.yml'
+  provider :google_oauth2, config['identifier'], config['secret']
+end
+
 # full path!
 DataMapper.setup(:default, 
                  ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/database.db" )

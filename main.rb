@@ -7,6 +7,12 @@ require 'sinatra/flash'
 require 'pp'
 
 enable :sessions
+set :session_secret, '*&(^#234)'
+
+use OmniAuth::Builder do
+  config = YAML.load_file 'config/config.yml'
+  provider :google_oauth2, config['identifier'], config['secret']
+end
 
 # full path!
 DataMapper.setup(:default, 
@@ -33,6 +39,10 @@ get '/grammar' do
   erb :grammar
 end
 
+get '/login/?' do
+  %Q|<a href='/auth/google_oauth2'>Sign in with Google</a>|
+end
+
 get '/:selected?' do |selected|
   programs = PL0Program.all
   pp programs
@@ -48,7 +58,6 @@ post '/save' do
   name = params[:fname]
   if name != "test" # check it on the client side
     c  = PL0Program.first(:name => name)
-    puts "prog <#{c.inspect}>"
     if c
       c.source = params["input"]
       c.save
@@ -57,10 +66,9 @@ post '/save' do
         c = PL0Program.all.sample
         c.destroy
       end
-      c = PL0Program.new
-      c.name = params["fname"]
-      c.source = params["input"]
-      c.save
+      c = PL0Program.create(
+        :name => params["fname"], 
+        :source => params["input"])
       flash[:notice] = 
         %Q{<div class="success">File saved as #{c.name}.</div>}
     end

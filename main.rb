@@ -7,6 +7,12 @@ require 'sinatra/flash'
 require 'pp'
 
 enable :sessions
+set :session_secret, '*&(^#234)'
+
+use OmniAuth::Builder do
+  config = YAML.load_file 'config/config.yml'
+  provider :google_oauth2, config['identifier'], config['secret']
+end
 
 use OmniAuth::Builder do
   config = YAML.load_file 'config/config.yml'
@@ -36,6 +42,10 @@ end
 
 get '/grammar' do
   erb :grammar
+end
+
+get '/login/?' do
+  %Q|<a href='/auth/google_oauth2'>Sign in with Google</a>|
 end
 
 get '/:selected?' do |selected|

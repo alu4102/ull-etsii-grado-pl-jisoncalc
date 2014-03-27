@@ -1,37 +1,21 @@
+$:.unshift "."
 require 'sinatra'
 require "sinatra/reloader" if development?
 require 'omniauth-oauth2'
 require 'omniauth-google-oauth2'
-require 'data_mapper'
+require 'pl0_program'
 require 'sinatra/flash'
 require 'pp'
 
 enable :sessions
 set :session_secret, '*&(^#234)'
+set :reserved_words, %w{grammar test login auth}
+set :max_files, 3        # no more than max_files+1 will be saved
 
 use OmniAuth::Builder do
   config = YAML.load_file 'config/config.yml'
   provider :google_oauth2, config['identifier'], config['secret']
 end
-
-use OmniAuth::Builder do
-  config = YAML.load_file 'config/config.yml'
-  provider :google_oauth2, config['identifier'], config['secret']
-end
-
-# full path!
-DataMapper.setup(:default, 
-                 ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/database.db" )
-
-class PL0Program
-  include DataMapper::Resource
-  
-  property :name, String, :key => true
-  property :source, String, :length => 1..1024
-end
-
-  DataMapper.finalize
-  DataMapper.auto_upgrade!
 
 helpers do
   def current?(path='/')
@@ -39,13 +23,29 @@ helpers do
   end
 end
 
-
 get '/grammar' do
   erb :grammar
 end
 
 get '/login/?' do
   %Q|<a href='/auth/google_oauth2'>Sign in with Google</a>|
+end
+
+get '/auth/:name/callback' do
+  @auth = request.env['omniauth.auth']
+  puts "params = #{params}"
+  puts "@auth.class = #{@auth.class}"
+  puts "@auth info = #{@auth['info']}"
+  puts "@auth info class = #{@auth['info'].class}"
+  puts "@auth info name = #{@auth['info'].name}"
+  puts "@auth info email = #{@auth['info'].email}"
+  #puts "-------------@auth----------------------------------"
+  #PP.pp @auth
+  #puts "*************@auth.methods*****************"
+  #PP.pp @auth.methods.sort
+  flash[:notice] = 
+        %Q{<div class="success">Authenticated as #{@auth['info'].name}.</div>}
+  redirect '/'
 end
 
 get '/:selected?' do |selected|
@@ -61,13 +61,16 @@ end
 post '/save' do
   pp params
   name = params[:fname]
-  if name != "test" # check it on the client side
+  if settings.reserved_words.include? name  # check it on the client side
+    flash[:notice] = 
+      %Q{<div class="error">Can't save file with name '#{name}'.</div>}
+  else 
     c  = PL0Program.first(:name => name)
     if c
       c.source = params["input"]
       c.save
     else
-      if PL0Program.all.size > 9
+      if PL0Program.all.size >= settings.max_files
         c = PL0Program.all.sample
         c.destroy
       end
@@ -77,9 +80,6 @@ post '/save' do
       flash[:notice] = 
         %Q{<div class="success">File saved as #{c.name}.</div>}
     end
-  else 
-    flash[:notice] = 
-      %q{<div class="error">Can't save file with name 'test'.</div>}
   end
   pp c
   redirect '/'

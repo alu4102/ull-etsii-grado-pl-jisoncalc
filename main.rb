@@ -1,5 +1,7 @@
 require 'sinatra'
 require "sinatra/reloader" if development?
+require 'omniauth-oauth2'
+require 'omniauth-google-oauth2'
 require 'data_mapper'
 require 'pp'
 
@@ -41,16 +43,22 @@ end
 post '/save' do
   pp params
   name = params[:fname]
-  c  = PL0Program.first(:name => name)
-  puts "prog <#{c.inspect}>"
-  if c
-    c.source = params["input"]
-    c.save
-  else
-    c = PL0Program.new
-    c.name = params["fname"]
-    c.source = params["input"]
-    c.save
+  if name != "test" # check it on the client side
+    c  = PL0Program.first(:name => name)
+    puts "prog <#{c.inspect}>"
+    if c
+      c.source = params["input"]
+      c.save
+    else
+      if PL0Program.all.size > 9
+        c = PL0Program.all.sample
+        c.destroy
+      end
+      c = PL0Program.new
+      c.name = params["fname"]
+      c.source = params["input"]
+      c.save
+    end
   end
   pp c
   redirect '/'

@@ -1,21 +1,15 @@
 $:.unshift "."
 require 'sinatra'
 require "sinatra/reloader" if development?
-require 'omniauth-oauth2'
-require 'omniauth-google-oauth2'
-require 'pl0_program'
 require 'sinatra/flash'
+require 'pl0_program'
+require 'auth'
 require 'pp'
 
 enable :sessions
 set :session_secret, '*&(^#234)'
 set :reserved_words, %w{grammar test login auth}
 set :max_files, 3        # no more than max_files+1 will be saved
-
-use OmniAuth::Builder do
-  config = YAML.load_file 'config/config.yml'
-  provider :google_oauth2, config['identifier'], config['secret']
-end
 
 helpers do
   def current?(path='/')
@@ -25,25 +19,6 @@ end
 
 get '/grammar' do
   erb :grammar
-end
-
-get '/auth/:name/callback' do
-  session[:auth] = @auth = request.env['omniauth.auth']
-  session[:name] = @auth['info'].name
-  session[:image] = @auth['info'].image
-  puts "params = #{params}"
-  puts "@auth.class = #{@auth.class}"
-  puts "@auth info = #{@auth['info']}"
-  puts "@auth info class = #{@auth['info'].class}"
-  puts "@auth info name = #{@auth['info'].name}"
-  puts "@auth info email = #{@auth['info'].email}"
-  #puts "-------------@auth----------------------------------"
-  #PP.pp @auth
-  #puts "*************@auth.methods*****************"
-  #PP.pp @auth.methods.sort
-  flash[:notice] = 
-        %Q{<div class="success">Authenticated as #{@auth['info'].name}.</div>}
-  redirect '/'
 end
 
 get '/:selected?' do |selected|

@@ -24,3 +24,8 @@ get '/auth/:name/callback' do
         %Q{<div class="success">Authenticated as #{@auth['info'].name}.</div>}
   redirect '/'
 end
+
+get '/auth/failure' do
+  flash[:notice] = params[:message] 
+  redirect '/'
+end

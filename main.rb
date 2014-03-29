@@ -55,7 +55,7 @@ post '/save' do
           :name => params["fname"], 
           :source => params["input"])
         flash[:notice] = 
-          %Q{<div class="success">File saved as #{c.name}.</div>}
+          %Q{<div class="success">File saved as #{c.name} by #{session[:name]}.</div>}
       end
       pp c
     end

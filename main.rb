@@ -41,6 +41,7 @@ post '/save' do
     if settings.reserved_words.include? name  # check it on the client side
       flash[:notice] = 
         %Q{<div class="error">Can't save file with name '#{name}'.</div>}
+      redirect back
     else 
       c  = PL0Program.first(:name => name)
       if c
@@ -58,12 +59,13 @@ post '/save' do
       flash[:notice] = 
         %Q{<div class="success">File saved as #{c.name} by #{session[:name]}.</div>}
       pp c
+      redirect to '/'+name
     end
   else
     flash[:notice] = 
       %Q{<div class="error">You are not authenticated.<br />
          Sign in with Google.
          </div>}
+    redirect back
   end
-  redirect back
 end

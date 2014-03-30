@@ -54,9 +54,9 @@ post '/save' do
         c = PL0Program.create(
           :name => params["fname"], 
           :source => params["input"])
-        flash[:notice] = 
-          %Q{<div class="success">File saved as #{c.name} by #{session[:name]}.</div>}
       end
+      flash[:notice] = 
+        %Q{<div class="success">File saved as #{c.name} by #{session[:name]}.</div>}
       pp c
     end
   else

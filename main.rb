@@ -65,5 +65,5 @@ post '/save' do
          Sign in with Google.
          </div>}
   end
-  redirect '/'
+  redirect back
 end

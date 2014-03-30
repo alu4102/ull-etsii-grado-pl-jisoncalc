@@ -14,9 +14,9 @@ function fact (n) {
 %left '+' '-'
 %left '*' '/'
 %left '^'
-%left '!'
 %right '%'
 %left UMINUS
+%left '!'
 
 %start prog
 
@@ -67,6 +67,9 @@ e
         {$$ = Math.pow($1, $3);}
     | e '!'
         {
+          if ($1 % 1 !== 0) 
+             throw "Error! Attempt to compute the factorial of "+
+                   "a floating point number "+$1;
           $$ = fact($1);
         }
     | e '%'

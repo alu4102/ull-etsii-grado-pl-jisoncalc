@@ -7,53 +7,57 @@
 </script>
 
 <br>
-Recuerde que un PEG $G$ es una cuaterna $G =(\Sigma,V,P,S)$.
+Recuerde que una gramática $G$ es una cuaterna $G =(\Sigma,V,P,S)$.
 <ol>
   <li>$\Sigma$ es el conjunto de terminales. 
-  <li>$V$ es un conjunto (disjunto de $\Sigma$) que se denomina conjunto de 
-      <i>símbolos no terminales</i>,
-      <i>variables sintácticas</i> o <i>categorías gramáticales</i>,
+  <li>$V$ es un conjunto (disjunto de $\Sigma$) que se denomina conjunto de <i>variables sintácticas</i> o <i>categorías gramáticales</i>,
   <li>$P$ es un conjunto de pares de $V \times (V \cup \Sigma )^*$. En vez de escribir
-  un par usando la notación $(A, \alpha) \in P$ se escribe $A \leftarrow \alpha$.
-  Un elemento de $P$ se denomina <i>regla de análisis</i>. 
+  un par usando la notación $(A, \alpha) \in P$ se escribe $A \rightarrow \alpha$.
+  Un elemento de $P$ se denomina producción. 
   <li>Por último, $S$ es un símbolo del conjunto
-  $V$ que se denomina <i>expresión de arranque</i>.
+  $V$ que se denomina símbolo de arranque.
 </ol>
 <ol>
-  <li> $\Sigma = \{ if, then, else, =, +, -, *, /, (, ), 0 \ldots 9 \}$, 
-  <li> $V = \{ st, exp, term, factor \} \cup$ <br />
-  $\{ASSIGN, ADD, MUL, LEFTPAR, RIGHTPAR \} \cup$ <br />
-  $\{IF, THEN, ELSE, ID, NUMBER, \_ \}$
-  <li> Reglas de Análisis:
+  <li> $\Sigma = \{ ; =, ID, PI, E, +, -, *, /, \text{^}, !, \%, (, ), NUMBER \}$, 
+  <li> $V = \{ prog, expressions, s, e \}$
+  <li> Productions:
   <ol>
+    <li>
 <pre>
-st     = ID ASSIGN exp
-       / IF exp THEN st ELSE st
-       / IF exp THEN st
-exp    = term   (ADD term)*
-term   = factor (MUL factor)*
+prog
+    : expressions EOF
+    ;
 
-factor = NUMBER
-       / ID
-       / LEFTPAR exp RIGHTPAR
+expressions
+    : s  
+    | expressions ';' s
+    ;
 
-_ = $[ \t\n\r]*
+s
+    : /* empty */
+    | e
+    ;
 
-ASSIGN   = _ '=' _
-ADD      = _ [+-] _
-MUL      = _ [*/] _
-LEFTPAR  = _"("_
-RIGHTPAR = _")"_
-IF       = _ "if" _
-THEN     = _ "then" _
-ELSE     = _ "else" _
-ID       = _ [a-zA-Z_][a-zA-Z_0-9]* _
-NUMBER   = _ [0-9]+ _
+e
+    : ID '=' e
+    | e '+' e
+    | e '-' e
+    | e '*' e
+    | e '/' e
+    | e '^' e
+    | e '!'
+    | e '%'
+    | '-' e 
+    | '(' e ')'
+    | NUMBER
+    | E
+    | PI
+    | ID 
+    ;
 </pre>
   </ol>
-  <li> Expresión de arranque: $st$
+  <li> Start symbol: $prog$
 </ol>
-<BR>
 <BR>
 <BR>
 

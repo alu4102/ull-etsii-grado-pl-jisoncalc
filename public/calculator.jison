@@ -1,6 +1,6 @@
 /* description: Parses end executes mathematical expressions. */
 
-%{
+%{                                              //codigo de soporte
 var symbol_table = {};
 
 function fact (n) { 
@@ -8,27 +8,27 @@ function fact (n) {
 }
 %}
 
-/* operator associations and precedence */
+/* operator associations and precedence */      //Direcctivas
 
-%right '='
-%left '+' '-'
-%left '*' '/'
-%left '^'
-%right '%'
-%left UMINUS
-%left '!'
+%right '='                                     
+%left '+' '-'         //En el caso de 2+3-2 elegimos el arbol de la izquierda (left) Cuando el + y el - se "pelean" coge el arbol hundido a izquiedas 
+%left '*' '/'         //En el caso de 2*1/3 elegimos el arbol de la izquierda (left)
+%left '^'             //El * tiene mas prioridad que el + y el -
+%right '%'            //Cuanto mas abajo este una directiva mas prioridad tiene
+%left UMINUS          
+%left '!'             
 
-%start prog
+%start prog                                                 //simbolo de arranque
 
 %% /* language grammar */
-prog
+prog                                                          
     : expressions EOF
         { 
           $$ = $1; 
           console.log($$);
           return [$$, symbol_table];
         }
-    ;
+    ;                                                       //fin de las reglas de prog
 
 expressions
     : s  
